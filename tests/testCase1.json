@@ -1,0 +1,16 @@
+{
+  "type": "TestCase",
+  "uuid": "4fa03a8d-2e39-4866-9cd3-69b77bd78a6b",
+  "testName": "t test produces calibrated p values",
+  "keywords": ["t-test", "p value", "statistics"],
+  "description": "This test checks that the p values produced by stats::t.test do not deviate substantially from the expected uniform distribution.",
+  "references:" "",
+  "code": "set.seed(42)\nm <- 100\nfor (n in c(5, 50, 500)) {\n# repeatedly sample data under null and record p value\nres <- numeric(m)\nfor (i in 1:m) {\nres[i] <- t.test(rnorm(n))$p.value\n}\n# expect non significant result\nexpect_true(\nks.test(res, 'punif')$p.value > 0.05\n)\n}",
+  "output": "",
+  "environment": {
+    "container": "rocker/tidyverse:4.3.1",
+    "runtime": "singularity",
+    "runtimeVersion": "3.8",
+    "renvLockfile": ""
+  }
+}
