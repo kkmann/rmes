@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "rPackage": {
+      "type": "object",
+      "description": "R-package information",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the R-package, e.g. 'PackageName'"
+        },
+        "link": {
+          "type": "string",
+          "description": "The link to the R-package, e.g. 'https://cran.r-project.org/package=PackageName'"
+        }
+      },
+      "required": ["name", "link"]
+    },
+    "CSADocPkg": {
+      "type": "object",
+      "description": "Computer Software Assurance Documentation Package for a software package in R; Example: t.test",
+      "properties": {
+        "function": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the function, e.g. 'Function A'"
+            },
+            "assuranceActivity": {
+              "type": "object",
+              "properties": {
+                "activityType": {
+                  "type": "string",
+                  "const": "Scripted Testing: Robust"
+                },
+                "definition": {
+                  "type": "string",
+                  "const": "Scripted testing efforts in which the risk of the computer system or automation includes evidence of repeatability, traceability to requirements, and auditability."
+                },
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "testObjectives": {
+                      "$ref": "#/properties/CSADocPkg/properties/function/properties/testObjectives"
+                    }
+                  }
+                }
+              },
+              "required": ["activityType", "definition", "parameters"]
+            },
+            "testObjectives": {
+              "type": "array",
+              "description": "An array of objects representing the test objectives",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "uuid": {
+                    "type": "string",
+                    "description": "A unique identifier for the test objective, e.g. '6cde1b0f-3e41-4878-8cd5-79c87be88a7d'"
+                  },
+                  "objective": {
+                    "type": "string",
+                    "description": "The main goal of the test objective, e.g. 'Verify that p values produced by stats::t.test are uniformly distributed'"
+                  },
+                  "keywords": {
+                    "type": "array",
+                    "description": "Keywords related to the test objective",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "testCases": {
+                    "type": "array",
+                    "description": "An array of test cases related to the test objective",
+                    "items": {
+                      "$ref": "#/definitions/testCase"
+                    }
+                  }
+                },
+                "required": ["uuid", "objective", "keywords", "testCases"]
+              }
+            }
+          },
+          "required": ["name", "assuranceActivity", "testObjectives"]
+        }
+      },
+      "required": ["function"]
+    }
+  },
+  "required": ["rPackage", "CSADocPkg"],
+  "definitions": {
+    "testCase": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "description": "A unique identifier for the test case, e.g. '4fa03a8d-2e39-4866-9cd3-69b77bd78a6b'"
+        },
+        "testName": {
+          "type": "string",
+          "description": "The name of the test case, e.g. 't test produces calibrated p values'"
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the test case, e.g. 'This test checks that the p values produced by stats::t.test do not deviate substantially from the expected uniform distribution.'"
+        },
+        "code": {
+          "type": "string",
+          "description": "The code to execute the test case, e.g. 'set.seed(42)\\nm <- 100\\nfor (n in c(5, 50, 500)) {\\n# repeatedly sample data under null and record p value\\nres <- numeric(m)\\nfor (i in 1:m) {\\nres[i] <- t.test(rnorm(n))$p.value\\n}\\n# expect non significant result\\nexpect_true(\\nks.test(res, 'punif')$p.value > 0.05\\n)\\n}'"
+        },
+        "result": {
+          "type": "string",
+          "description": "The result of the test case, either 'pass' or 'fail'",
+          "enum": ["pass", "fail"]
+        },
+        "environment": {
+          "type": "object",
+          "description": "The environment in which the test case is executed",
+          "properties": {
+            "container": {
+              "type": "string",
+              "description": "The container used for the test case, e.g. 'rocker/tidyverse:4.3.1'"
+            },
+            "runtime": {
+              "type": "string",
+              "description": "The runtime used for the test case, e.g. 'singularity'"
+            },
+            "runtimeVersion": {
+              "type": "string",
+              "description": "The version of the runtime, e.g. '3.8'"
+            },
+            "renvLockfile": {
+              "type": "string",
+              "description": "The lockfile for the environment, e.g. ''"
+            }
+          }
+        }
+      },
+      "required": ["uuid", "testName", "description", "code", "result", "environment"]
+    }
+  }
+}
