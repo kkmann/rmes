@@ -1,0 +1,85 @@
+{
+  "rPackage": {
+    "name": "stats",
+    "link": "https://cran.r-project.org/package=stats"
+  },
+  "CSADocPkg": {
+    "function": {
+      "name": "t.test",
+      "assuranceActivity": {
+        "activityType": "Scripted Testing: Robust",
+        "definition": "Scripted testing efforts in which the risk of the computer system or automation includes evidence of repeatability, traceability to requirements, and auditability.",
+        "parameters": {
+          "testObjectives": [
+            {
+              "uuid": "6cde1b0f-3e41-4878-8cd5-79c87be88a7d",
+              "objective": "Verify that p values produced by stats::t.test are uniformly distributed",
+              "keywords": ["t.test", "p values", "uniform distribution"],
+              "testCases": [
+                {
+                  "uuid": "4fa03a8d-2e39-4866-9cd3-69b77bd78a6b",
+                  "testName": "t test produces calibrated p values",
+                  "description": "This test checks that the p values produced by stats::t.test do not deviate substantially from the expected uniform distribution.",
+                  "code": "set.seed(42)\\nm <- 100\\nfor (n in c(5, 50, 500)) {\\n# repeatedly sample data under null and record p value\\nres <- numeric(m)\\nfor (i in 1:m) {\\nres[i] <- t.test(rnorm(n))$p.value\\n}\\n# expect non significant result\\nexpect_true(\\nks.test(res, 'punif')$p.value > 0.05\\n)\\n}",
+                  "result": "pass",
+                  "environment": {
+                    "container": "rocker/tidyverse:4.3.1",
+                    "runtime": "singularity",
+                    "runtimeVersion": "3.8",
+                    "renvLockfile": ""
+                  }
+                },
+                {
+                  "uuid": "5bce1c0f-3e41-4878-8cd5-79c87be88a7d",
+                  "testName": "t test produces correct p values for known data",
+                  "description": "This test checks that the p values produced by stats::t.test are correct for a known dataset.",
+                  "code": "data <- c(1, 2, 3, 4, 5)\\nexpected_p_value <- 0.0737\\ntest_result <- t.test(data)\\nexpect_true(abs(test_result$p.value - expected_p_value) < 0.001)",
+                  "result": "pass",
+                  "environment": {
+                    "container": "rocker/tidyverse:4.3.1",
+                    "runtime": "singularity",
+                    "runtimeVersion": "3.8",
+                    "renvLockfile": ""
+                  }
+                }
+              ]
+            },
+            {
+              "uuid": "7cde1b0f-3e41-4878-8cd5-79c87be88a7d",
+              "objective": "Verify that t values produced by stats::t.test are correct",
+              "keywords": ["t.test", "t values"],
+              "testCases": [
+                {
+                  "uuid": "6fa03a8d-2e39-4866-9cd3-69b77bd78a6b",
+                  "testName": "t test produces correct t values for equal variances",
+                  "description": "This test checks that the t values produced by stats::t.test are correct for two samples with equal variances.",
+                  "code": "sample1 <- c(1, 2, 3, 4, 5)\\nsample2 <- c(6, 7, 8, 9, 10)\\nexpected_t_value <- -5.4349\\ntest_result <- t.test(sample1, sample2)\\nexpect_true(abs(test_result$statistic - expected_t_value) < 0.001)",
+                  "result": "pass",
+                  "environment": {
+                    "container": "rocker/tidyverse:4.3.1",
+                    "runtime": "singularity",
+                    "runtimeVersion": "3.8",
+                    "renvLockfile": ""
+                  }
+                },
+                {
+                  "uuid": "7bce1c0f-3e41-4878-8cd5-79c87be88a7d",
+                  "testName": "t test produces correct t values for unequal variances",
+                  "description": "This test checks that the t values produced by stats::t.test are correct for two samples with unequal variances.",
+                  "code": "sample1 <- c(1, 2, 3, 4, 5)\\nsample2 <- c(10, 20, 30, 40, 50)\\nexpected_t_value <- -5.4349\\ntest_result <- t.test(sample1, sample2, var.equal = FALSE)\\nexpect_true(abs(test_result$statistic - expected_t_value) < 0.001)",
+                  "result": "pass",
+                  "environment": {
+                    "container": "rocker/tidyverse:4.3.1",
+                    "runtime": "singularity",
+                    "runtimeVersion": "3.8",
+                    "renvLockfile": ""
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
